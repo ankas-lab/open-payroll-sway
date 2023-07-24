@@ -1,44 +1,25 @@
 contract;
 
+mod data_structures;
 mod interface;
-use interface::MyContract;
+mod errors;
+
+use interface::OpenPayroll;
+use errors::OpenPayrollError;
+
+
+
+
 use std::storage::storage_vec::*;
+use ::data_structures::*;
 
 use std::u128::U128;
 use std::constants::{
         ZERO_B256,
     };
 
-type Balance = U128;
-type BlockNumber = U128;
-type Multipler = U128;
-type MultiplierId = u32;
-type MultplierString = str[7];
 
-pub struct Beneficiary {
-    account_id: Identity,
-    multipliers: StorageMap<u32, Multipler>,
-    unclaimed_payments: Balance,
-    last_updated_period_block: BlockNumber,
-}
-
-pub struct ClaimsInPeriod {
-    period: u32,
-    total_claims: u32,
-}
-
-pub struct BaseMultiplier {
-    name: MultplierString,
-    valid_until_block: Option<BlockNumber>,
-}
-impl BaseMultiplier {
-    pub fn new(name: MultplierString) -> Self {
-        Self {
-            name,
-            valid_until_block: None,
-        }
-    }
-}
+/// Beneficiary structure containing the account id, the multipliers, the unclaimed payments, and the last updated period block
 
 storage {
     /// The account to be transfered to, until the new owner accept it
@@ -64,13 +45,17 @@ storage {
         /// A list of the multipliers_ids
         multipliers_list: StorageVec<MultiplierId> = StorageVec {},
         /// Current claims in period
-        claims_in_period: ClaimsInPeriod = ClaimsInPeriod { period:0, total_claims:0},
+        claims_in_period: ClaimsInPeriod = ClaimsInPeriod { period:0, total_claims:0 },
 }
 
-
-
-impl MyContract for Contract {
-    fn test_function() -> bool {
-        true
+impl OpenPayroll for Contract {
+    #[payable]
+    #[storage(read, write)]
+    fn new(
+            periodicity: u32,
+            base_payment: Balance,
+            initial_base_multipliers: StorageVec<MultplierString>,
+            initial_beneficiaries: StorageVec<Address>,
+        ) {
     }
 }
