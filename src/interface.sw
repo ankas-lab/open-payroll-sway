@@ -5,13 +5,8 @@ use std::storage::storage_vec::*;
 use ::data_structures::*;
 
 abi OpenPayroll {
-     #[payable, storage(read, write)]
-    fn new(
-            periodicity: u32,
-            base_payment: Balance,
-            initial_base_multipliers: StorageVec<MultplierString>,
-            initial_beneficiaries: StorageVec<Address>,
-        );
+    #[storage(read, write)]
+    fn constructor(periodicity: u32, base_payment: Balance, initial_base_multipliers: StorageVec<MultplierString>, initial_beneficiaries: StorageVec<Address>);
 /* 
     #[storage(read, write)]
     fn claim_payment(
@@ -122,6 +117,6 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_owner() -> Address;
 
-    
+
     */
 }

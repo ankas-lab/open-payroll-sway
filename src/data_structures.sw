@@ -8,6 +8,21 @@ pub type Multipler = U128;
 pub type MultiplierId = u32;
 pub type MultplierString = str[7];
 
+pub enum State {
+    Initialized: (),
+    Uninitialized: (),
+}
+
+impl core::ops::Eq for State {
+    fn eq(self, other: Self) -> bool {
+        match (self, other) {
+            (State::Initialized, State::Initialized) => true,
+            (State::Uninitialized, State::Uninitialized) => true,
+            _ => false,
+        }
+    }
+}
+
 pub struct Beneficiary {
     account_id: Identity,
     multipliers: StorageMap<u32, Multipler>,

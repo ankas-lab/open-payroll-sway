@@ -5,7 +5,7 @@ mod interface;
 mod errors;
 
 use interface::OpenPayroll;
-use errors::OpenPayrollError;
+use errors::*;
 
 
 
@@ -18,8 +18,6 @@ use std::constants::{
         ZERO_B256,
     };
 
-
-/// Beneficiary structure containing the account id, the multipliers, the unclaimed payments, and the last updated period block
 
 storage {
     /// The account to be transfered to, until the new owner accept it
@@ -46,16 +44,19 @@ storage {
         multipliers_list: StorageVec<MultiplierId> = StorageVec {},
         /// Current claims in period
         claims_in_period: ClaimsInPeriod = ClaimsInPeriod { period:0, total_claims:0 },
+        // Initialice contract
+        state: State = State::Uninitialized,
 }
 
 impl OpenPayroll for Contract {
-    #[payable]
     #[storage(read, write)]
-    fn new(
+    fn constructor(
             periodicity: u32,
             base_payment: Balance,
             initial_base_multipliers: StorageVec<MultplierString>,
             initial_beneficiaries: StorageVec<Address>,
         ) {
+            require(storage.state.read() == State::Uninitialized, InitError::CannotReinitialize);
+            storage.state.write(State::Initialized);
     }
 }
