@@ -1,0 +1,7 @@
+[project]
+authors = ["Ankas"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "open-payroll"
+
+[dependencies]
