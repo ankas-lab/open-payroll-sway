@@ -1,12 +1,14 @@
 library;
 
-use std::u128::U128;
 use std::storage::storage_vec::*;
 use ::data_structures::*;
 
 abi OpenPayroll {
     #[storage(read, write)]
-    fn constructor(periodicity: u32, base_payment: Balance, initial_base_multipliers: StorageVec<MultplierString>, initial_beneficiaries: StorageVec<Address>);
+    fn constructor(periodicity: u32, base_payment: Balance, initial_base_multipliers: Vec<MultplierString>, initial_beneficiaries: Vec<Address>);
+
+    #[storage(read, write)]
+    fn claim_payment(account_id: Address, amount: Balance);
 /* 
     #[storage(read, write)]
     fn claim_payment(

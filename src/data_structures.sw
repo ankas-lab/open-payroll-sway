@@ -1,10 +1,8 @@
 library;
 
-use std::u128::U128;
-
-pub type Balance = U128;
-pub type BlockNumber = U128;
-pub type Multipler = U128;
+pub type Balance = u64;
+pub type BlockNumber = u32;
+pub type Multipler = u64;
 pub type MultiplierId = u32;
 pub type MultplierString = str[7];
 
