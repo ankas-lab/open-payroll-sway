@@ -103,6 +103,7 @@ impl OpenPayroll for Contract {
 
     #[storage(read, write)]
     fn claim_payment(account_id: Address, amount: Balance) {
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(ensure_is_not_pause(storage.paused_block_at.read()), OpenPayrollError::ContractIsPaused);
         let beneficiary_res = storage.beneficiaries.get(account_id).try_read();
 
@@ -139,5 +140,27 @@ impl OpenPayroll for Contract {
             total_payment: total_payment,
             claiming_period_block: claiming_period_block,
         });
+    }
+
+    #[storage(read, write)]
+    fn pause(){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
+        require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
+
+        if storage.paused_block_at.read().is_none() {
+            storage.paused_block_at.write(Some(height()));
+            log(Paused {});
+        }
+    }
+    
+    #[storage(read, write)]
+    fn resume(){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
+        require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
+
+        if storage.paused_block_at.read().is_some() {
+            storage.paused_block_at.write(None);
+            log(Resumed {});
+        }
     }
 }

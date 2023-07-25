@@ -9,12 +9,13 @@ abi OpenPayroll {
 
     #[storage(read, write)]
     fn claim_payment(account_id: Address, amount: Balance);
-/* 
+
     #[storage(read, write)]
-    fn claim_payment(
-            account_id: Address,
-            amount: Balance,
-        );
+    fn pause();
+    
+    #[storage(read, write)]
+    fn resume();
+/* 
     
     #[storage(read, write)]
     fn deactivate_multiplier(multiplier_id: MultiplierId);
@@ -52,11 +53,7 @@ abi OpenPayroll {
     #[storage(read, write)]
     fn update_periodicity(&mut self, periodicity: u32)
 
-    #[storage(read, write)]
-    fn pause();
-    
-    #[storage(read, write)]
-    fn resume();
+
     
     // readonly
 
