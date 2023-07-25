@@ -9,6 +9,7 @@ library;
     pub struct Claimed {
         account_id: Address,
         amount: Balance,
+        asset_id: AssetId,
         total_payment: Balance,
         claiming_period_block: BlockNumber,
     }

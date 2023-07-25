@@ -27,8 +27,7 @@ use std::{
     call_frames::contract_id
 };
 
-use std::u128::U128;
-use std::constants::{ZERO_B256};
+use std::{u128::U128, constants::{ZERO_B256, BASE_ASSET_ID},};
 
 storage {
     /// The account to be transfered to, until the new owner accept it
@@ -113,7 +112,7 @@ impl OpenPayroll for Contract {
         let current_block = height();
 
         // check the asset Id is the same
-        require ((msg_asset_id()).into() == TOKEN_ID, OpenPayrollError::TransferFailed);
+        require (msg_asset_id() == BASE_ASSET_ID, OpenPayrollError::TransferFailed);
         require (amount>0, OpenPayrollError::TransferFailed);
 
         // TODO: If there are deactivated multipliers, remove them from the beneficiary
@@ -130,12 +129,13 @@ impl OpenPayroll for Contract {
         beneficiary.last_updated_period_block = claiming_period_block;
         storage.beneficiaries.insert(account_id, beneficiary);
 
-        transfer(amount, ContractId::from(TOKEN_ID), Identity::Address(account_id));
+        transfer(amount, BASE_ASSET_ID, Identity::Address(account_id));
 
         // Emit Event
         log(Claimed {
             account_id: account_id,
             amount: amount,
+            asset_id: BASE_ASSET_ID,
             total_payment: total_payment,
             claiming_period_block: claiming_period_block,
         });
