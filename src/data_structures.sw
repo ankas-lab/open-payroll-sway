@@ -3,8 +3,6 @@ library;
 pub type Balance = u64;
 pub type BlockNumber = u32;
 pub type Multiplier = u64;
-pub type MultiplierId = u32;
-pub type MultplierString = str[7];
 
 pub enum State {
     Initialized: (),
@@ -23,7 +21,7 @@ impl core::ops::Eq for State {
 
 pub struct Beneficiary {
     account_id: Identity,
-    multipliers: StorageMap<MultiplierId, Multiplier>,
+    multiplier: Multiplier,
     unclaimed_payments: Balance,
     last_updated_period_block: BlockNumber,
 }
@@ -32,18 +30,4 @@ pub struct Beneficiary {
 pub struct ClaimsInPeriod {
     period: u32,
     total_claims: u32,
-}
-
-/// Base multiplier structure containg a name and an option block number for being used when deactivating the multiplier
-pub struct BaseMultiplier {
-    name: MultplierString,
-    valid_until_block: Option<BlockNumber>,
-}
-impl BaseMultiplier {
-    pub fn new(name: MultplierString) -> Self {
-        Self {
-            name,
-            valid_until_block: None,
-        }
-    }
 }
