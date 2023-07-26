@@ -5,10 +5,10 @@ use ::data_structures::*;
 
 abi OpenPayroll {
     #[storage(read, write)]
-    fn constructor(periodicity: u32, base_payment: Balance, initial_base_multipliers: Vec<MultplierString>, initial_beneficiaries: Vec<Address>);
+    fn constructor(periodicity: u32, base_payment: Balance, initial_base_multipliers: Vec<MultplierString>, initial_beneficiaries: Vec<Identity>);
 
     #[storage(read, write)]
-    fn claim_payment(account_id: Address, amount: Balance);
+    fn claim_payment(account_id: Identity, amount: Balance);
 
     #[storage(read, write)]
     fn pause();
@@ -21,6 +21,12 @@ abi OpenPayroll {
 
     #[storage(read, write)]
     fn accept_ownership();
+
+    #[storage(read, write)]
+    fn add_beneficiary(
+        account_id: Identity,
+        multipliers: Vec<(MultiplierId, Multiplier)>,
+    );
 /* 
     
     #[storage(read, write)]
@@ -28,14 +34,6 @@ abi OpenPayroll {
 
     #[storage(read, write)]
     fn delete_unused_multiplier(multiplier_id: MultiplierId);
-
-
-
-    #[storage(read, write)]
-    fn add_beneficiary(
-            account_id: Address,
-            multipliers: StorageVec<(MultiplierId, Multiplier)>,
-        );
 
     #[storage(read, write)]
     fn update_beneficiary(

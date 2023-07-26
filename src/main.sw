@@ -27,7 +27,7 @@ use std::{
     call_frames::contract_id
 };
 
-use std::{u128::U128, constants::{ZERO_B256, BASE_ASSET_ID},};
+use std::{u128::U128, constants::{ZERO_B256, BASE_ASSET_ID}};
 
 storage {
     /// The account to be transfered to, until the new owner accept it
@@ -35,9 +35,9 @@ storage {
     /// The accountId of the creator of the contract, who has 'priviliged' access to do administrative tasks
     owner: Identity = Identity::ContractId(ContractId::from(ZERO_B256)),
     /// Mapping from the accountId to the beneficiary information
-    beneficiaries: StorageMap<Address, Beneficiary> = StorageMap {},
+    beneficiaries: StorageMap<Identity, Beneficiary> = StorageMap {},
     /// Vector of Accounts
-    beneficiaries_accounts: StorageVec<Address> = StorageVec {},
+    beneficiaries_accounts: StorageVec<Identity> = StorageVec {},
     /// The payment periodicity in blocks
     periodicity: u32 = 0,
     /// The amount of each base payment
@@ -67,7 +67,7 @@ impl OpenPayroll for Contract {
         periodicity: u32,
         base_payment: Balance,
         initial_base_multipliers: Vec<MultplierString>,
-        initial_beneficiaries: Vec<Address>,
+        initial_beneficiaries: Vec<Identity>,
     ) {
         require(storage.state.read() == State::Uninitialized, InitError::CannotReinitialize);
         require(periodicity > 0, OpenPayrollError::InvalidParams);
@@ -85,7 +85,15 @@ impl OpenPayroll for Contract {
         // vec to vecstorage for beneficiaries
         let mut i = 0;
         while i < initial_beneficiaries.len() {
-            storage.beneficiaries_accounts.push(initial_beneficiaries.get(i).unwrap());
+            let address = initial_beneficiaries.get(i).unwrap();
+            
+            storage.beneficiaries_accounts.push( address);
+            storage.beneficiaries.insert(address, Beneficiary {
+                account_id: address,
+                unclaimed_payments: 0,
+                last_updated_period_block: 0,
+                multipliers: StorageMap {},
+            });
             i += 1;
         }
 
@@ -102,7 +110,7 @@ impl OpenPayroll for Contract {
     }
 
     #[storage(read, write)]
-    fn claim_payment(account_id: Address, amount: Balance) {
+    fn claim_payment(account_id: Identity, amount: Balance) {
         require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(ensure_is_not_pause(storage.paused_block_at.read()), OpenPayrollError::ContractIsPaused);
         let beneficiary_res = storage.beneficiaries.get(account_id).try_read();
@@ -130,7 +138,7 @@ impl OpenPayroll for Contract {
         beneficiary.last_updated_period_block = claiming_period_block;
         storage.beneficiaries.insert(account_id, beneficiary);
 
-        transfer(amount, BASE_ASSET_ID, Identity::Address(account_id));
+        transfer(amount, BASE_ASSET_ID, account_id);
 
         // Emit Event
         log(Claimed {
@@ -166,6 +174,7 @@ impl OpenPayroll for Contract {
 
     #[storage(read, write)]
     fn propose_transfer_ownership(new_owner: Identity){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
         storage.proposed_owner.write(Some(new_owner));
 
@@ -177,14 +186,44 @@ impl OpenPayroll for Contract {
 
     #[storage(read, write)]
     fn accept_ownership(){
-        let old_owner = storage.owner.read();
-        
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(storage.proposed_owner.read().unwrap()  == msg_sender().unwrap() , OpenPayrollError::NotProposedOwner);
+
+        let old_owner = storage.owner.read();
         storage.proposed_owner.write(None);
 
         log(OwnershipAccepted {
             previous_owner: old_owner,
             new_owner: storage.owner.read(),
         });
+    }
+
+    #[storage(read, write)]
+    fn add_beneficiary(
+        account_id: Identity,
+        multipliers: Vec<(MultiplierId, Multiplier)>,
+    ){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
+        //self.ensure_beneficiary_to_add(account_id, &multipliers)?; //TODO: implement
+
+        // vec to storagemap for multipliers
+        let mut i = 0;
+        let mut storage_map_multipliers = StorageVec { };
+        while i < multipliers.len() {
+            let multiplier_id = multipliers.get(i).unwrap().0;
+            let multiplier = multipliers.get(i).unwrap().1;
+            storage_map_multipliers.push(multiplier);
+            i += 1;
+        }
+    // TODO have to re evaluate
+        storage.beneficiaries.insert(account_id, Beneficiary {
+            account_id: account_id,
+            unclaimed_payments: 0,
+            last_updated_period_block: 0,
+            multipliers: storage_map_multipliers,
+            last_updated_period_block: 0, // TODO: implement self.get_current_period_initial_block(),
+        });
+
+
     }
 }

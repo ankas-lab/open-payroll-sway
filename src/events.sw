@@ -7,7 +7,7 @@ library;
 
     /// Emitted when a beneficiary claims their payment
     pub struct Claimed {
-        account_id: Address,
+        account_id: Identity,
         amount: Balance,
         asset_id: AssetId,
         total_payment: Balance,
@@ -41,13 +41,13 @@ library;
     /// Emitted when a beneficiary is added
     pub struct BeneficiaryAdded {
         account_id: Address,
-        multipliers_vec: StorageVec<(MultiplierId, u64)>,
+        multipliers_vec: StorageVec<(MultiplierId, Multiplier)>,
     }
 
     /// Emitted when a beneficiary is updated
     pub struct BeneficiaryUpdated {
         account_id: Address,
-        multipliers_vec: StorageVec<(MultiplierId, u64)>,
+        multipliers_vec: StorageVec<(MultiplierId, Multiplier)>,
     }
 
     /// Emitted when a beneficiary is removed
