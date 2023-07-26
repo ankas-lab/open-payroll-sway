@@ -15,6 +15,12 @@ abi OpenPayroll {
     
     #[storage(read, write)]
     fn resume();
+
+    #[storage(read, write)]
+    fn propose_transfer_ownership(new_owner: Identity);
+
+    #[storage(read, write)]
+    fn accept_ownership();
 /* 
     
     #[storage(read, write)]
@@ -23,11 +29,7 @@ abi OpenPayroll {
     #[storage(read, write)]
     fn delete_unused_multiplier(multiplier_id: MultiplierId);
 
-    #[storage(read, write)]
-    fn propose_transfer_ownership(new_owner: Address);
 
-    #[storage(read, write)]
-    fn accept_ownership();
 
     #[storage(read, write)]
     fn add_beneficiary(

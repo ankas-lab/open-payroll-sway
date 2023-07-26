@@ -28,14 +28,14 @@ library;
 
     /// Emiited when the ownership of the contract is transferred
     pub struct OwnershipProposed {
-        current_owner: Address,
-        proposed_owner: Address,
+        current_owner: Identity,
+        proposed_owner: Identity,
     }
 
     /// Emitted when the ownership of the contract is accepted
     pub struct OwnershipAccepted {
-        previous_owner: Address,
-        new_owner: Address,
+        previous_owner: Identity,
+        new_owner: Identity,
     }
 
     /// Emitted when a beneficiary is added

@@ -8,6 +8,8 @@ pub enum InitError {
 pub enum OpenPayrollError {
     /// The caller is not the owner of the contract
     NotOwner: (),
+    /// The caller is not the proposed owner
+    NotProposedOwner: (),
     /// The contract is paused
     ContractIsPaused: (),
     /// The params are invalid

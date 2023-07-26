@@ -31,7 +31,7 @@ use std::{u128::U128, constants::{ZERO_B256, BASE_ASSET_ID},};
 
 storage {
     /// The account to be transfered to, until the new owner accept it
-    proposed_owner: Option<Address> = None,
+    proposed_owner: Option<Identity> = None,
     /// The accountId of the creator of the contract, who has 'priviliged' access to do administrative tasks
     owner: Identity = Identity::ContractId(ContractId::from(ZERO_B256)),
     /// Mapping from the accountId to the beneficiary information
@@ -162,5 +162,29 @@ impl OpenPayroll for Contract {
             storage.paused_block_at.write(None);
             log(Resumed {});
         }
+    }
+
+    #[storage(read, write)]
+    fn propose_transfer_ownership(new_owner: Identity){
+        require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
+        storage.proposed_owner.write(Some(new_owner));
+
+        log(OwnershipProposed {
+            current_owner: storage.owner.read(),
+            proposed_owner: new_owner,
+        });
+    }
+
+    #[storage(read, write)]
+    fn accept_ownership(){
+        let old_owner = storage.owner.read();
+        
+        require(storage.proposed_owner.read().unwrap()  == msg_sender().unwrap() , OpenPayrollError::NotProposedOwner);
+        storage.proposed_owner.write(None);
+
+        log(OwnershipAccepted {
+            previous_owner: old_owner,
+            new_owner: storage.owner.read(),
+        });
     }
 }
