@@ -247,6 +247,14 @@ impl OpenPayroll for Contract {
         log(BeneficiaryRemoved {
             account_id: account_id,
         });
+    }
 
+    #[storage(read, write)]
+    fn update_base_payment( base_payment: Balance){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
+        require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
+        require(base_payment > 0, OpenPayrollError::InvalidParams);
+
+        storage.base_payment.write(base_payment);
     }
 }
