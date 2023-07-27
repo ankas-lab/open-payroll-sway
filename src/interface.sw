@@ -36,19 +36,14 @@ abi OpenPayroll {
 
     #[storage(read, write)]
     fn update_base_payment( base_payment: Balance);
+
+    #[storage(read, write)]
+    fn update_periodicity(periodicity: u32);
+
+    #[storage(read)]
+    fn is_paused() -> bool;
 /* 
 
-    
-    
-    
-
-    
-
-    #[storage(read, write)]
-    fn add_base_multiplier( name: String); 
-    
-    #[storage(read, write)]
-    fn update_periodicity(&mut self, periodicity: u32)
 
 
     
@@ -56,8 +51,7 @@ abi OpenPayroll {
 
     // fn ensure_all_payments_uptodate();
 
-    #[storage(read)]
-    fn is_paused() -> bool;
+    
 
     #[storage(read)]
     fn get_amount_to_claim(account_id: Address) -> Option<Balance>;

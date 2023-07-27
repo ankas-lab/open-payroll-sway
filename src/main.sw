@@ -257,4 +257,18 @@ impl OpenPayroll for Contract {
 
         storage.base_payment.write(base_payment);
     }
+
+    #[storage(read, write)]
+    fn update_periodicity( periodicity: u32){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
+        require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
+        require(periodicity > 0, OpenPayrollError::InvalidParams);
+
+        storage.periodicity.write(periodicity);
+    }
+
+    #[storage(read)]
+    fn is_paused() -> bool{
+        storage.paused_block_at.read().is_some()
+    }
 }
