@@ -24,19 +24,15 @@ abi OpenPayroll {
 
     #[storage(read, write)]
     fn add_beneficiary(account_id: Identity, multiplier: Multiplier);
-/* 
-    
-    #[storage(read, write)]
-    fn deactivate_multiplier(multiplier_id: MultiplierId);
-
-    #[storage(read, write)]
-    fn delete_unused_multiplier(multiplier_id: MultiplierId);
 
     #[storage(read, write)]
     fn update_beneficiary(
-            account_id: AccountId,
-            multipliers: Vec<(MultiplierId, Multiplier)>,
-        );
+        account_id: Identity,
+        multiplier: Multiplier,
+    );
+/* 
+
+    
     
     #[storage(read, write)]
     fn remove_beneficiary(account_id: AccountId);

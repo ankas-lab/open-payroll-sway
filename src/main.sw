@@ -195,4 +195,34 @@ impl OpenPayroll for Contract {
             last_updated_period_block: 0, // TODO: implement self.get_current_period_initial_block(),
         });
     }
+
+    #[storage(read, write)]
+    fn update_beneficiary(
+        account_id: Identity,
+        multiplier: Multiplier,
+    ){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
+        require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
+
+        // Ensure that the beneficiary exists
+        if !storage.beneficiaries.contains(account_id) {
+            return Err(Error::AccountNotFound);
+        }
+
+        // TODO: implement
+        // calculate the amount to claim to be transferred to the uncleared payments
+        // let unclaimed_payments = self._get_amount_to_claim(account_id, false);
+
+        self.beneficiaries.insert(account_id, Beneficiary {
+            account_id: account_id,
+            unclaimed_payments: 0,
+            last_updated_period_block: 0,
+            multiplier: multiplier,
+        });
+
+        log(BeneficiaryUpdated {
+            account_id: account_id,
+            multiplier: multiplier,
+        });
+    }
 }
