@@ -307,11 +307,20 @@ impl OpenPayroll for Contract {
     }
 
     #[storage(read)]
-    fn get_next_block_period() -> BlockNumber{
+    fn get_next_block_period() -> BlockNumber {
         let current_block = height();
         let periodicity = storage.periodicity.read();
         let get_current_period_initial_block = current_block - ((current_block - storage.initial_block.read()) % storage.periodicity.read()); // TODO: can call a read function ?
-
         get_current_period_initial_block + storage.periodicity.read()
     }
-}   
+
+    #[storage(read)]
+    fn get_base_payment() -> Balance {
+        storage.base_payment.read()
+    }
+
+    #[storage(read)]
+    fn get_periodicity() -> BlockNumber {
+        storage.periodicity.read()
+    }
+}

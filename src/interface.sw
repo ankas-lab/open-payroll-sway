@@ -55,9 +55,15 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_next_block_period() -> BlockNumber;
 
+    #[storage(read)]
+    fn get_base_payment() -> Balance;
+
+    #[storage(read)]
+    fn get_periodicity() -> BlockNumber;
+
 /* 
 
-
+    
 
     
     // readonly
@@ -86,22 +92,11 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_count_of_unclaim_beneficiaries() -> u8;
 
-    #[storage(read)]
-    fn get_base_payment() -> Balance;
 
-    #[storage(read)]
-    fn get_periodicity() -> BlockNumber;
 
     #[storage(read)]
     fn get_initial_block() -> BlockNumber;
 
-    #[storage(read)]
-    fn get_multipliers_list() -> StorageVec<MultiplierId>;
-
-    #[storage(read)]
-    fn get_base_multiplier(multiplier_id: MultiplierId) -> Option<BaseMultiplier>;
-
-   
 
 
     */
