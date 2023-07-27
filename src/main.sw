@@ -179,14 +179,9 @@ impl OpenPayroll for Contract {
     }
 
     #[storage(read, write)]
-    fn add_beneficiary(
-        account_id: Identity,
-        multiplier: Multiplier,
-    ) {
+    fn add_beneficiary(account_id: Identity, multiplier: Multiplier) {
         require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         //self.ensure_beneficiary_to_add(account_id, &multipliers)?; //TODO: implement
-
-
         storage.beneficiaries.insert(account_id, Beneficiary {
             account_id: account_id,
             unclaimed_payments: 0,
@@ -197,16 +192,13 @@ impl OpenPayroll for Contract {
     }
 
     #[storage(read, write)]
-    fn update_beneficiary(
-        account_id: Identity,
-        multiplier: Multiplier,
-    ){
+    fn update_beneficiary(account_id: Identity, multiplier: Multiplier) {
         require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
 
         // Ensure that the beneficiary exists
         require(storage.beneficiaries.get(account_id).try_read().is_some(), OpenPayrollError::AccountNotFound);
-        
+
         // TODO: implement
         // calculate the amount to claim to be transferred to the uncleared payments
         // let unclaimed_payments = self._get_amount_to_claim(account_id, false);
@@ -224,8 +216,8 @@ impl OpenPayroll for Contract {
         });
     }
 
-     #[storage(read, write)]
-    fn remove_beneficiary(account_id: Identity){
+    #[storage(read, write)]
+    fn remove_beneficiary(account_id: Identity) {
         require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
 
@@ -233,24 +225,25 @@ impl OpenPayroll for Contract {
         require(storage.beneficiaries.get(account_id).try_read().is_some(), OpenPayrollError::AccountNotFound);
 
         storage.beneficiaries.remove(account_id);
-        
+
         // Delete a account from a storageVec without retain
         let mut index = 0;
         while index < storage.beneficiaries_accounts.len() {
-            if account_id == storage.beneficiaries_accounts.get(index).unwrap().read() {
+            if account_id == storage.beneficiaries_accounts.get(index).unwrap().read()
+            {
                 storage.beneficiaries_accounts.swap_remove(index);
                 break;
             }
             index += 1;
         }
-       
+
         log(BeneficiaryRemoved {
             account_id: account_id,
         });
     }
 
     #[storage(read, write)]
-    fn update_base_payment( base_payment: Balance){
+    fn update_base_payment(base_payment: Balance) {
         require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
         require(base_payment > 0, OpenPayrollError::InvalidParams);
@@ -259,7 +252,7 @@ impl OpenPayroll for Contract {
     }
 
     #[storage(read, write)]
-    fn update_periodicity( periodicity: u32){
+    fn update_periodicity(periodicity: u32) {
         require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
         require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
         require(periodicity > 0, OpenPayrollError::InvalidParams);
@@ -268,7 +261,38 @@ impl OpenPayroll for Contract {
     }
 
     #[storage(read)]
-    fn is_paused() -> bool{
+    fn is_paused() -> bool {
         storage.paused_block_at.read().is_some()
+    }
+
+    #[storage(read)]
+    fn get_owner() -> Identity {
+        storage.owner.read()
+    }
+
+    #[storage(read)]
+    fn get_amount_to_claim(account_id: Identity) -> Option<Balance> {
+        let beneficiary_res = storage.beneficiaries.get(account_id).try_read();
+        if beneficiary_res.is_none() {
+            return None;
+        }
+        let beneficiary = beneficiary_res.unwrap();
+        let block = height();
+        // Calculates the number of blocks that have elapsed since the last payment
+        let blocks_since_last_payment = block - beneficiary.last_updated_period_block;
+
+        // Calculates the number of periods that are due based on the elapsed blocks
+        let unclaimed_periods: u64 = blocks_since_last_payment / storage.periodicity.read();
+
+        // If there's no unclaimed periods, return the unclaimed payments
+        // Otherwise, calculate the amount to claim and add the unclaimed payments
+        if unclaimed_periods == 0 {
+            Some(beneficiary.unclaimed_payments)
+        } else {
+            let payment_per_period =
+                get_amount_to_claim_for_one_period(beneficiary, storage.base_payment.read());
+
+            Some(payment_per_period * unclaimed_periods + beneficiary.unclaimed_payments)
+        }
     }
 }

@@ -26,22 +26,25 @@ abi OpenPayroll {
     fn add_beneficiary(account_id: Identity, multiplier: Multiplier);
 
     #[storage(read, write)]
-    fn update_beneficiary(
-        account_id: Identity,
-        multiplier: Multiplier,
-    );
+    fn update_beneficiary(account_id: Identity, multiplier: Multiplier);
 
     #[storage(read, write)]
     fn remove_beneficiary(account_id: Identity);
 
     #[storage(read, write)]
-    fn update_base_payment( base_payment: Balance);
+    fn update_base_payment(base_payment: Balance);
 
     #[storage(read, write)]
     fn update_periodicity(periodicity: u32);
 
     #[storage(read)]
     fn is_paused() -> bool;
+
+    #[storage(read)]
+    fn get_owner() -> Identity;
+
+    #[storage(read)]
+    fn get_amount_to_claim(account_id: Identity) -> Option<Balance>;
 /* 
 
 
@@ -53,8 +56,7 @@ abi OpenPayroll {
 
     
 
-    #[storage(read)]
-    fn get_amount_to_claim(account_id: Address) -> Option<Balance>;
+    
 
     #[storage(read)]
     fn get_beneficiary(account_id: Address) -> Option<Beneficiary>;
@@ -104,8 +106,7 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_base_multiplier(multiplier_id: MultiplierId) -> Option<BaseMultiplier>;
 
-    #[storage(read)]
-    fn get_owner() -> Address;
+   
 
 
     */
