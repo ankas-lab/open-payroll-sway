@@ -26,19 +26,19 @@ pub struct OwnershipAccepted {
 
 /// Emitted when a beneficiary is added
 pub struct BeneficiaryAdded {
-    account_id: Address,
+    account_id: Identity,
     multiplier: Multiplier,
 }
 
 /// Emitted when a beneficiary is updated
 pub struct BeneficiaryUpdated {
-    account_id: Address,
+    account_id: Identity,
     multiplier: Multiplier,
 }
 
 /// Emitted when a beneficiary is removed
 pub struct BeneficiaryRemoved {
-    account_id: Address,
+    account_id: Identity,
 }
 
 /// Emitted when the preiodicity is updated

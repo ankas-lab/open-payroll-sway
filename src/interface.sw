@@ -30,12 +30,14 @@ abi OpenPayroll {
         account_id: Identity,
         multiplier: Multiplier,
     );
+
+    #[storage(read, write)]
+    fn remove_beneficiary(account_id: Identity);
 /* 
 
     
     
-    #[storage(read, write)]
-    fn remove_beneficiary(account_id: AccountId);
+    
 
     #[storage(read, write)]
     fn update_base_payment( base_payment: Balance);

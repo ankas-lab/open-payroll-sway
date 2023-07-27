@@ -205,15 +205,13 @@ impl OpenPayroll for Contract {
         require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
 
         // Ensure that the beneficiary exists
-        if !storage.beneficiaries.contains(account_id) {
-            return Err(Error::AccountNotFound);
-        }
-
+        require(storage.beneficiaries.get(account_id).try_read().is_some(), OpenPayrollError::AccountNotFound);
+        
         // TODO: implement
         // calculate the amount to claim to be transferred to the uncleared payments
         // let unclaimed_payments = self._get_amount_to_claim(account_id, false);
 
-        self.beneficiaries.insert(account_id, Beneficiary {
+        storage.beneficiaries.insert(account_id, Beneficiary {
             account_id: account_id,
             unclaimed_payments: 0,
             last_updated_period_block: 0,
@@ -224,5 +222,31 @@ impl OpenPayroll for Contract {
             account_id: account_id,
             multiplier: multiplier,
         });
+    }
+
+     #[storage(read, write)]
+    fn remove_beneficiary(account_id: Identity){
+        require(ensure_is_initialized(storage.state.read()), InitError::NotInitialized);
+        require(ensure_owner(storage.owner.read()), OpenPayrollError::NotOwner);
+
+        // Ensure that the beneficiary exists
+        require(storage.beneficiaries.get(account_id).try_read().is_some(), OpenPayrollError::AccountNotFound);
+
+        storage.beneficiaries.remove(account_id);
+        
+        // Delete a account from a storageVec without retain
+        let mut index = 0;
+        while index < storage.beneficiaries_accounts.len() {
+            if account_id == storage.beneficiaries_accounts.get(index).unwrap().read() {
+                storage.beneficiaries_accounts.swap_remove(index);
+                break;
+            }
+            index += 1;
+        }
+       
+        log(BeneficiaryRemoved {
+            account_id: account_id,
+        });
+
     }
 }
