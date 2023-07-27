@@ -1,6 +1,6 @@
 library;
 
-use ::data_structures::{ Beneficiary, Balance, State };
+use ::data_structures::{Balance, Beneficiary, State};
 
 pub fn ensure_is_not_pause(paused_block_at: Option<u32>) -> bool {
     assert(paused_block_at.is_none());
@@ -18,8 +18,8 @@ pub fn ensure_is_initialized(state: State) -> bool {
 }
 
 pub fn get_amount_to_claim_for_one_period(
-            beneficiary: Beneficiary,
-            base_payment: Balance,
-    ) -> Balance {
+    beneficiary: Beneficiary,
+    base_payment: Balance,
+) -> Balance {
     beneficiary.multiplier * base_payment / 100
 }

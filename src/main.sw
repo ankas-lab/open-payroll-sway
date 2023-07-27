@@ -289,15 +289,29 @@ impl OpenPayroll for Contract {
         if unclaimed_periods == 0 {
             Some(beneficiary.unclaimed_payments)
         } else {
-            let payment_per_period =
-                get_amount_to_claim_for_one_period(beneficiary, storage.base_payment.read());
+            let payment_per_period = get_amount_to_claim_for_one_period(beneficiary, storage.base_payment.read());
 
             Some(payment_per_period * unclaimed_periods + beneficiary.unclaimed_payments)
         }
     }
 
-        #[storage(read)]
-    fn get_beneficiary(account_id: Identity) -> Option<Beneficiary>{
+    #[storage(read)]
+    fn get_beneficiary(account_id: Identity) -> Option<Beneficiary> {
         storage.beneficiaries.get(account_id).try_read()
     }
-}
+
+    #[storage(read)]
+    fn get_current_period_initial_block() -> BlockNumber {
+        let current_block = height();
+        current_block - ((current_block - storage.initial_block.read()) % storage.periodicity.read())
+    }
+
+    #[storage(read)]
+    fn get_next_block_period() -> BlockNumber{
+        let current_block = height();
+        let periodicity = storage.periodicity.read();
+        let get_current_period_initial_block = current_block - ((current_block - storage.initial_block.read()) % storage.periodicity.read()); // TODO: can call a read function ?
+
+        get_current_period_initial_block + storage.periodicity.read()
+    }
+}   

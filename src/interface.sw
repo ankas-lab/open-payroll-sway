@@ -46,8 +46,15 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_amount_to_claim(account_id: Identity) -> Option<Balance>;
 
-        #[storage(read)]
+    #[storage(read)]
     fn get_beneficiary(account_id: Identity) -> Option<Beneficiary>;
+
+    #[storage(read)]
+    fn get_current_period_initial_block() -> BlockNumber;
+
+    #[storage(read)]
+    fn get_next_block_period() -> BlockNumber;
+
 /* 
 
 
@@ -57,20 +64,6 @@ abi OpenPayroll {
 
     // fn ensure_all_payments_uptodate();
 
-    
-
-    
-
-
-
-    #[storage(read)]
-    fn get_current_period_initial_block() -> BlockNumber;
-
-    #[storage(read)]
-    fn get_next_block_period() -> BlockNumber;
-
-    #[storage(read)]
-    fn get_next_block_period() -> BlockNumber;
 
     #[storage(read)]
     fn get_total_debt_for_next_period() -> Balance;
