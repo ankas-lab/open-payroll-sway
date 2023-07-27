@@ -61,15 +61,13 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_periodicity() -> BlockNumber;
 
+    #[storage(read)]
+    fn get_initial_block() -> BlockNumber;
+
 /* 
 
-    
-
-    
-    // readonly
-
+    #[storage(read)]
     // fn ensure_all_payments_uptodate();
-
 
     #[storage(read)]
     fn get_total_debt_for_next_period() -> Balance;
@@ -93,9 +91,6 @@ abi OpenPayroll {
     fn get_count_of_unclaim_beneficiaries() -> u8;
 
 
-
-    #[storage(read)]
-    fn get_initial_block() -> BlockNumber;
 
 
 

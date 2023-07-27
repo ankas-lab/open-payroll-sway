@@ -323,4 +323,9 @@ impl OpenPayroll for Contract {
     fn get_periodicity() -> BlockNumber {
         storage.periodicity.read()
     }
+
+    #[storage(read)]
+    fn get_initial_block() -> BlockNumber {
+        storage.initial_block.read()
+    }
 }
