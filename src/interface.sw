@@ -64,10 +64,14 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_initial_block() -> BlockNumber;
 
+    #[storage(read)]
+    fn get_list_beneficiaries() -> StorageVec<Identity>;
+
+    fn get_contract_balance() -> Balance;
 /* 
 
     #[storage(read)]
-    // fn ensure_all_payments_uptodate();
+    fn ensure_all_payments_uptodate();
 
     #[storage(read)]
     fn get_total_debt_for_next_period() -> Balance;
@@ -75,11 +79,6 @@ abi OpenPayroll {
     #[storage(read)]
     fn get_total_debt_with_unclaimed_for_next_period() -> Balance; 
 
-    #[storage(read)]
-    fn get_list_beneficiaries() -> StorageVec<Address>;
-
-    #[storage(read)]
-    fn get_contract_balance() -> Balance;
 
     #[storage(read)]
     fn get_balance_with_debts() -> Balance;    
