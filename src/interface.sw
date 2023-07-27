@@ -45,6 +45,9 @@ abi OpenPayroll {
 
     #[storage(read)]
     fn get_amount_to_claim(account_id: Identity) -> Option<Balance>;
+
+        #[storage(read)]
+    fn get_beneficiary(account_id: Identity) -> Option<Beneficiary>;
 /* 
 
 
@@ -58,8 +61,7 @@ abi OpenPayroll {
 
     
 
-    #[storage(read)]
-    fn get_beneficiary(account_id: Address) -> Option<Beneficiary>;
+
 
     #[storage(read)]
     fn get_current_period_initial_block() -> BlockNumber;

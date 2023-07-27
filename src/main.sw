@@ -295,4 +295,9 @@ impl OpenPayroll for Contract {
             Some(payment_per_period * unclaimed_periods + beneficiary.unclaimed_payments)
         }
     }
+
+        #[storage(read)]
+    fn get_beneficiary(account_id: Identity) -> Option<Beneficiary>{
+        storage.beneficiaries.get(account_id).try_read()
+    }
 }
